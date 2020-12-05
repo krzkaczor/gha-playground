@@ -1,0 +1,15 @@
+on:
+  pull_request:
+
+jobs:
+  playground:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello world action step
+        id: hello
+        uses: krzkaczor/gha-playground
+        with:
+          who-to-greet: 'Kris'
+      # Use the output from the `hello` step
+      - name: Get the output time
+        run: echo "The time was ${{ steps.hello.outputs.time }}"
