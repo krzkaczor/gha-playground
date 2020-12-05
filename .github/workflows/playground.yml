@@ -7,9 +7,11 @@ jobs:
   playground:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
+
       - name: Hello world action step
         id: hello
-        uses: krzkaczor/gha-playground@master
+        uses: ./
         with:
           who-to-greet: 'Kris'
       # Use the output from the `hello` step
