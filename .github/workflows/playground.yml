@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Hello world action step
         id: hello
-        uses: krzkaczor/gha-playground/master
+        uses: krzkaczor/gha-playground@master
         with:
           who-to-greet: 'Kris'
       # Use the output from the `hello` step
