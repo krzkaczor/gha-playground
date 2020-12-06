@@ -33,9 +33,10 @@ jobs:
       - run: yarn build
 
       - name: Commit files
-      run: |
+        run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+
         git add --force dist/index.js
         git commit -m "Autorelease" -a
 
