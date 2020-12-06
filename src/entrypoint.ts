@@ -1,9 +1,15 @@
 import * as core from '@actions/core'
 
-export function action() {
+export async function action() {
   // `who-to-greet` input defined in action metadata file
   const nameToGreet = core.getInput('who-to-greet')
   console.log(`Hello ${nameToGreet}!!!`)
   const time = new Date().toTimeString()
   core.setOutput('time', time)
 }
+
+action().catch((e) => {
+  console.log('Error happened:', e)
+  // in case of error mark action as failed
+  core.setFailed(e.message)
+})
