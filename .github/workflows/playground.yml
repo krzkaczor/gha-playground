@@ -1,3 +1,5 @@
+name: playground
+
 on:
   pull_request:
 
@@ -5,9 +7,26 @@ jobs:
   playground:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Cache YARN dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            */*/node_modules
+          key: ${{ runner.OS }}-12.x-yarn-cache-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.OS }}-12.x-yarn-cache-
+
+      - run: yarn --no-progress --non-interactive --frozen-lockfile
+      - run: yarn build
+
       - name: Hello world action step
         id: hello
-        uses: krzkaczor/gha-playground
+        uses: ./
         with:
           who-to-greet: 'Kris'
       # Use the output from the `hello` step

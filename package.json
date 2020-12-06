@@ -17,14 +17,13 @@
     "typecheck": "tsc --noEmit",
     "test": "mocha --config .mocharc.js",
     "test:fix": "yarn lint:fix && yarn format:fix && yarn test && yarn typecheck",
-    "build": "yarn clean && tsc -p ./tsconfig.prod.json",
-    "build:watch": "yarn clean && tsc -p ./tsconfig.prod.json --watch",
-    "build:watch:test": "yarn clean && tsc -p ./tsconfig.json --watch",
+    "build": "yarn clean && ncc build ./src/entrypoint.ts -o dist",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@types/node": "^14.14.10",
+    "@vercel/ncc": "^0.25.1",
     "ts-essentials": "^7.0.1"
   },
   "devDependencies": {
