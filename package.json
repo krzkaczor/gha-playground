@@ -17,7 +17,7 @@
     "typecheck": "tsc --noEmit",
     "test": "mocha --config .mocharc.js",
     "test:fix": "yarn lint:fix && yarn format:fix && yarn test && yarn typecheck",
-    "build": "yarn clean && ncc build ./src/entrypoint.ts -o dist && rm -rf ./dist/test",
+    "build": "yarn clean && ncc build ./src/entrypoint.ts -o dist",
     "clean": "rm -rf dist"
   },
   "dependencies": {
