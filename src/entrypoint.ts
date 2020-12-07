@@ -1,11 +1,10 @@
 import * as core from '@actions/core'
+import * as github from '@actions/github'
 
 export async function action() {
-  // `who-to-greet` input defined in action metadata file
-  const nameToGreet = core.getInput('who-to-greet')
-  console.log(`Hello ${nameToGreet}!!!`)
-  const time = new Date().toTimeString()
-  core.setOutput('time', time)
+  const ctx = github.context
+  console.log(`Hello world!`)
+  console.log(JSON.stringify(ctx))
 }
 
 action().catch((e) => {

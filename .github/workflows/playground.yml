@@ -1,7 +1,8 @@
 name: playground
 
 on:
-  pull_request:
+  issue_comment:
+    types: [created]
 
 jobs:
   playground:
@@ -26,9 +27,6 @@ jobs:
 
       - name: Hello world action step
         id: hello
-        uses: ./
+        uses: krzkaczor/gha-playground@action
         with:
           who-to-greet: 'Kris'
-      # Use the output from the `hello` step
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
