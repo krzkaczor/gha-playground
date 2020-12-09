@@ -1,6 +1,6 @@
 import { assert } from 'ts-essentials'
 
-const getTypes = require('/Users/krzkaczor/Workspace/actions/all-contributors-cli/dist/util/contribution-types.js')
+const getTypes = require('all-contributors-cli/dist/util/contribution-types.js')
 
 const allValidContributionTypes = Object.keys(getTypes({}))
 

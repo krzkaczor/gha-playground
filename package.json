@@ -25,7 +25,7 @@
     "@actions/github": "^4.0.0",
     "@types/node": "^14.14.10",
     "@vercel/ncc": "^0.25.1",
-    "all-contributors-cli": "^6.19.0",
+    "all-contributors-cli": "=6.19.0",
     "ts-essentials": "^7.0.1"
   },
   "devDependencies": {
