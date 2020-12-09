@@ -1,4 +1,5 @@
 import { ParsedContribution } from './Contribution'
+import { parseContribution } from './parseContributions'
 
 const CONTRIBUTION_REGEX = /@all-contributors (?:please )?add @(?<name>.*?) for (?<whatFor>.*?)(?:[.\n]|$)/gm
 
@@ -7,10 +8,12 @@ export function parseComment(comment: string): ParsedContribution[] {
 
   const parsedContributions = matches.map(
     ([user, contributionList]): ParsedContribution => {
+      const contributions = parseContributionList(contributionList)
+
       return {
         who: user,
-        forWhat: parseContributionList(contributionList),
-        unrecognized: [],
+        forWhat: contributions.parsed,
+        unrecognized: contributions.unrecognized,
       }
     },
   )
@@ -18,9 +21,29 @@ export function parseComment(comment: string): ParsedContribution[] {
   return parsedContributions
 }
 
-function parseContributionList(contributionList: string): string[] {
+export function parseContributionList(contributionList: string): { parsed: string[]; unrecognized: string[] } {
   const contributions = contributionList.split(/[, ]/)
-  return contributions.map((c) => c.trim())
+
+  const parsed: string[] = []
+  const unrecognized: string[] = []
+
+  for (const _rawContribution of contributions) {
+    const rawContribution = _rawContribution.trim()
+    // this can easily happen while splitting string, just ignore these
+    if (rawContribution === '') {
+      continue
+    }
+
+    const contribution = parseContribution(rawContribution)
+
+    if (!contribution) {
+      unrecognized.push(rawContribution)
+    } else {
+      parsed.push(contribution)
+    }
+  }
+
+  return { parsed, unrecognized }
 }
 
 function getAllMatches(regex: any, string: string): any[] {

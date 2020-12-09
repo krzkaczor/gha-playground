@@ -1,6 +1,6 @@
 import { expect } from 'earljs'
 
-import { parseComment } from '../../src/all-contributors/parseComment'
+import { parseComment, parseContributionList } from '../../src/all-contributors/parseComment'
 
 const validComments = [
   '@all-contributors add @user123 for doc',
@@ -32,5 +32,28 @@ describe('parseComment', () => {
       { who: 'user123', forWhat: ['doc'], unrecognized: [] },
       { who: 'userabc', forWhat: ['design'], unrecognized: [] },
     ])
+  })
+})
+
+describe('parseContributionList', () => {
+  it('works with commas', () => {
+    expect(parseContributionList('doc, design, code')).toEqual({
+      parsed: ['doc', 'design', 'code'],
+      unrecognized: [],
+    })
+  })
+
+  it('works with spaces', () => {
+    expect(parseContributionList('doc design code')).toEqual({
+      parsed: ['doc', 'design', 'code'],
+      unrecognized: [],
+    })
+  })
+
+  it('works with mixed', () => {
+    expect(parseContributionList('doc, design code, something')).toEqual({
+      parsed: ['doc', 'design', 'code'],
+      unrecognized: ['something'],
+    })
   })
 })
