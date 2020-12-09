@@ -18,6 +18,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "user123",
+      "name": "user123",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/543186?v=4",
+      "profile": "https://github.com/user123",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7
