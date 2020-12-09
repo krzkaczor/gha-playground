@@ -1,4 +1,4 @@
-import { ParsedContribution } from './Contribution'
+import { ParsedContribution } from '../Contribution'
 
 const addUser = require('all-contributors-cli/dist/contributors/add.js')
 const { getUserInfo } = require('all-contributors-cli/dist/repo')
