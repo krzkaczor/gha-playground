@@ -13,19 +13,7 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: Cache YARN dependencies
-        uses: actions/cache@v2
-        with:
-          path: |
-            node_modules
-            */*/node_modules
-          key: ${{ runner.OS }}-12.x-yarn-cache-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.OS }}-12.x-yarn-cache-
-
-      - run: yarn --no-progress --non-interactive --frozen-lockfile
-      - run: yarn build
-
       - name: Hello world action step
         uses: krzkaczor/gha-playground@action
         with:
-          who-to-greet: 'Kris'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
