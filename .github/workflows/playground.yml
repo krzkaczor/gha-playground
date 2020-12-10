@@ -16,10 +16,10 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: Setup SSH debug session
-        uses: mxschmitt/action-tmate@v2
+      # - name: Setup SSH debug session
+      #   uses: mxschmitt/action-tmate@v2
 
-      # - name: Hello world action step
-      #   uses: krzkaczor/gha-playground@action
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Hello world action step
+        uses: krzkaczor/gha-playground@action
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
