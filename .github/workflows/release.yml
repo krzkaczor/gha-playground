@@ -39,6 +39,7 @@ jobs:
           git stash
           git fetch --all
           git checkout action
+          yarn clean
           git stash pop
 
           git commit -m "Auto-release" -a
