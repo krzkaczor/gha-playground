@@ -35,16 +35,16 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git fetch --all
+          git checkout action
 
           git add --force dist/index.js
-          git commit -m "Autorelease" -a
+          git commit -m "Auto-release" -a
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: action
-          force: true
 # Few tips github actions
 # - name: Setup SSH debug session
 #   uses: mxschmitt/action-tmate@v2
