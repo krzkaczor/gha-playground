@@ -30,8 +30,8 @@ jobs:
       - run: yarn --no-progress --non-interactive --frozen-lockfile
       - run: yarn build
 
-      - name: Setup SSH debug session
-        uses: mxschmitt/action-tmate@v2
+      # - name: Setup SSH debug session
+      #   uses: mxschmitt/action-tmate@v2
 
       - name: Commit files
         run: |
@@ -42,8 +42,7 @@ jobs:
           git stash
           git fetch --all
           git checkout action
-          yarn clean
-          git stash pop
+          git checkout stash -- .
 
           git commit -m "Auto-release" -a
 
