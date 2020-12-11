@@ -30,6 +30,9 @@ jobs:
       - run: yarn --no-progress --non-interactive --frozen-lockfile
       - run: yarn build
 
+      - name: Setup SSH debug session
+        uses: mxschmitt/action-tmate@v2
+
       - name: Commit files
         run: |
           git config --local user.email "action@github.com"
