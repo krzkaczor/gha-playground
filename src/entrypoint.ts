@@ -23,7 +23,7 @@ export async function action() {
   }
 
   const actorPermissions = await checkPermissions(octokit, github.context, github.context.actor)
-  if (actorPermissions !== 'write' && actorPermissions !== 'read') {
+  if (actorPermissions !== 'write' && actorPermissions !== 'admin') {
     throw new Error(`${github.context.actor} doesn't have access to run this action`)
   }
 
