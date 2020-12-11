@@ -22,4 +22,4 @@ jobs:
       - name: Hello world action step
         uses: krzkaczor/gha-playground@action
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

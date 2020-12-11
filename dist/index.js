@@ -17358,7 +17358,7 @@ exports.getOctokit = void 0;
 const github_1 = __webpack_require__(5438);
 const ts_essentials_1 = __webpack_require__(4253);
 function getOctokit() {
-    const ghToken = process.env.GITHUB_TOKEN;
+    const ghToken = process.env.INPUT_GITHUB_TOKEN;
     ts_essentials_1.assert(ghToken, 'GITHUB_TOKEN not found. Did you forgot to pass it as env?');
     return github_1.getOctokit(ghToken);
 }
