@@ -30,22 +30,24 @@ jobs:
       - run: yarn --no-progress --non-interactive --frozen-lockfile
       - run: yarn build
 
+      # - name: Setup SSH debug session
+      #   uses: mxschmitt/action-tmate@v2
+
       - name: Commit files
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git fetch --all
 
           git add --force dist/index.js
-          git commit -m "Autorelease" -a
+          git stash
+          git fetch --all
+          git checkout action
+          git checkout stash -- .
+
+          git commit -m "Auto-release" -a
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: action
-          force: true
-# Few tips github actions
-# - name: Setup SSH debug session
-#   uses: mxschmitt/action-tmate@v2
-

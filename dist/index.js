@@ -17180,20 +17180,29 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.action = void 0;
 const core = __importStar(__webpack_require__(2186));
 const github = __importStar(__webpack_require__(5438));
+const ts_essentials_1 = __webpack_require__(4253);
 const addContributors_1 = __webpack_require__(4184);
 const findConfig_1 = __webpack_require__(1934);
 const generate_1 = __webpack_require__(8424);
 const parseComment_1 = __webpack_require__(3077);
 const push_all_1 = __webpack_require__(3991);
-const helpers_1 = __webpack_require__(3015);
+const addReaction_1 = __webpack_require__(7069);
+const checkPermissions_1 = __webpack_require__(2784);
+const getters_1 = __webpack_require__(3137);
+const octokit_1 = __webpack_require__(7891);
 function action() {
     return __awaiter(this, void 0, void 0, function* () {
         const ctx = github.context;
-        const comment = helpers_1.getCommentBody(ctx);
+        const octokit = octokit_1.getOctokit();
+        const cwd = process.cwd();
+        const comment = getters_1.getCommentBody(ctx);
         if (!comment) {
             throw new Error("Comment body couldn't be found. Did you setup action to run on `issue_comment` event?");
         }
-        const cwd = process.cwd();
+        const actorPermissions = yield checkPermissions_1.checkPermissions(octokit, github.context, github.context.actor);
+        if (actorPermissions !== 'write' && actorPermissions !== 'read') {
+            throw new Error(`${github.context.actor} doesn't have access to run this action`);
+        }
         const configPath = findConfig_1.findConfig(cwd);
         if (!configPath) {
             throw new Error("Can't find all contributors config file!");
@@ -17203,6 +17212,9 @@ function action() {
         yield addContributors_1.addContributions(configPath, contributions);
         yield generate_1.generateContributorsListIntoMarkdown({ configPath, cwd });
         yield push_all_1.pushAll();
+        const commentId = getters_1.getCommentId(ctx);
+        ts_essentials_1.assert(commentId !== undefined, "Comment body couldn't be found. Did you setup action to run on `issue_comment` event?");
+        yield addReaction_1.addReaction(octokit, ctx, commentId);
     });
 }
 exports.action = action;
@@ -17254,19 +17266,103 @@ exports.pushAll = pushAll;
 
 /***/ }),
 
-/***/ 3015:
+/***/ 7069:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.addReaction = void 0;
+function addReaction(octokit, ctx, commentId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield octokit.reactions.createForIssueComment({
+            owner: ctx.repo.owner,
+            repo: ctx.repo.repo,
+            comment_id: commentId,
+            content: '+1',
+        });
+    });
+}
+exports.addReaction = addReaction;
+
+
+/***/ }),
+
+/***/ 2784:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.checkPermissions = void 0;
+const ALL_POSSIBLE_PERMISSIONS = (/* unused pure expression or super */ null && (['none', 'read', 'write', 'admin']));
+function checkPermissions(octokit, ctx, username) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const response = yield octokit.repos.getCollaboratorPermissionLevel(Object.assign(Object.assign({}, ctx.repo), { username }));
+        return response.data.permission; // @todo replace with explicit validation like with zod
+    });
+}
+exports.checkPermissions = checkPermissions;
+
+
+/***/ }),
+
+/***/ 3137:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getCommentBody = void 0;
+exports.getCommentId = exports.getCommentBody = void 0;
 function getCommentBody(ctx) {
     var _a;
     const body = (_a = ctx.payload.comment) === null || _a === void 0 ? void 0 : _a.body;
     return body;
 }
 exports.getCommentBody = getCommentBody;
+function getCommentId(ctx) {
+    var _a;
+    const id = (_a = ctx.payload.comment) === null || _a === void 0 ? void 0 : _a.id;
+    return id;
+}
+exports.getCommentId = getCommentId;
+
+
+/***/ }),
+
+/***/ 7891:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getOctokit = void 0;
+const github_1 = __webpack_require__(5438);
+const ts_essentials_1 = __webpack_require__(4253);
+function getOctokit() {
+    const ghToken = process.env.GITHUB_TOKEN;
+    ts_essentials_1.assert(ghToken, 'GITHUB_TOKEN not found. Did you forgot to pass it as env?');
+    return github_1.getOctokit(ghToken);
+}
+exports.getOctokit = getOctokit;
 
 
 /***/ }),
