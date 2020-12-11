@@ -17200,7 +17200,7 @@ function action() {
             throw new Error("Comment body couldn't be found. Did you setup action to run on `issue_comment` event?");
         }
         const actorPermissions = yield checkPermissions_1.checkPermissions(octokit, github.context, github.context.actor);
-        if (actorPermissions !== 'write' && actorPermissions !== 'read') {
+        if (actorPermissions !== 'write' && actorPermissions !== 'admin') {
             throw new Error(`${github.context.actor} doesn't have access to run this action`);
         }
         const configPath = findConfig_1.findConfig(cwd);
@@ -17284,12 +17284,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.addReaction = void 0;
 function addReaction(octokit, ctx, commentId) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield octokit.reactions.createForIssueComment({
-            owner: ctx.repo.owner,
-            repo: ctx.repo.repo,
-            comment_id: commentId,
-            content: '+1',
-        });
+        yield octokit.reactions.createForIssueComment(Object.assign(Object.assign({}, ctx.repo), { comment_id: commentId, content: '+1' }));
     });
 }
 exports.addReaction = addReaction;
@@ -17317,6 +17312,7 @@ const ALL_POSSIBLE_PERMISSIONS = (/* unused pure expression or super */ null && 
 function checkPermissions(octokit, ctx, username) {
     return __awaiter(this, void 0, void 0, function* () {
         const response = yield octokit.repos.getCollaboratorPermissionLevel(Object.assign(Object.assign({}, ctx.repo), { username }));
+        console.log('response: ', JSON.stringify(response));
         return response.data.permission; // @todo replace with explicit validation like with zod
     });
 }
