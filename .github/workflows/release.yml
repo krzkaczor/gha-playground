@@ -34,8 +34,11 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+
+          git stash
           git fetch --all
           git checkout action
+          git stash pop
 
           git add --force dist/index.js
           git commit -m "Auto-release" -a
