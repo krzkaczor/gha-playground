@@ -20,7 +20,7 @@ describe('integration', () => {
 
       const octokit = getOctokit('NOT_EXISTING_TOKEN')
       const execMock = mockFn<Exec>().resolvesTo(0)
-      // event from a admin to add @octocat user as a contributor
+      // event from an admin to add @octocat user as a contributor
       const event = require('./fixtures/validEvent.json')
       const ctx = new Context(event)
 
