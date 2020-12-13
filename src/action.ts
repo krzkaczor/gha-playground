@@ -9,11 +9,13 @@ import { addReaction } from './github/addReaction'
 import { checkPermissions } from './github/checkPermissions'
 import { getCommentBody, getCommentId } from './github/getters'
 import { GithubContext, Octokit } from './github/octokit'
+import { Exec } from './types'
 
 interface ActionCtx {
   ctx: GithubContext
   octokit: Octokit
   cwd: string
+  exec: Exec
 }
 
 export async function action({ cwd, ctx, octokit }: ActionCtx) {

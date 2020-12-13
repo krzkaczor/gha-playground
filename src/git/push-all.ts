@@ -1,14 +1,12 @@
-import simpleGit from 'simple-git/promise'
-const git = simpleGit()
+import { Exec } from '../types'
 
-export async function pushAll() {
-  await git.addConfig('user.email', 'github-actions[bot]@users.noreply.github.com')
-  await git.addConfig('user.name', 'github-actions[bot]')
-  await git.checkoutBranch('master', 'origin/master')
+export async function pushAll(exec: Exec) {
+  await exec('git config --global user.email github-actions[bot]@users.noreply.github.com')
+  await exec('git config --global user.name github-actions[bot]')
+  await exec('git checkout master')
 
-  const s = await git.status()
-  await git.add(s.modified)
-  await git.commit('Auto commit')
-  const remote = `https://${process.env.GITHUB_ACTOR}:${process.env.INPUT_GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`
-  await git.push(remote, 'master')
+  await exec('git add -A')
+  await exec('git commit -m Auto commit')
+
+  await exec('git push')
 }
