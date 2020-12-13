@@ -6,7 +6,7 @@ export async function pushAll(exec: Exec) {
   await exec('git checkout master')
 
   await exec('git add -A')
-  await exec('git commit -m Auto commit')
+  await exec('git commit -m "Auto commit"')
 
   await exec('git push')
 }

@@ -12133,7 +12133,7 @@ function pushAll(exec) {
         yield exec('git config --global user.name github-actions[bot]');
         yield exec('git checkout master');
         yield exec('git add -A');
-        yield exec('git commit -m Auto commit');
+        yield exec('git commit -m "Auto commit"');
         yield exec('git push');
     });
 }
