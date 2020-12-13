@@ -12,9 +12,6 @@ jobs:
         with:
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
 
-      - name: Setup SSH debug session
-        uses: mxschmitt/action-tmate@v2
-
       - name: Hello world action step
         uses: krzkaczor/gha-playground@action
         with:

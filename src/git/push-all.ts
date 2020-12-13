@@ -8,5 +8,8 @@ export async function pushAll(exec: Exec) {
   await exec('git add -A')
   await exec('git commit -m "Auto commit"')
 
-  await exec('git push')
+  await exec(
+    `git remote add origin-authed https://${process.env.GITHUB_ACTOR}:${process.env.INPUT_GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`,
+  )
+  await exec('git push origin-authed')
 }
