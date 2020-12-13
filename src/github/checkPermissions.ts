@@ -13,7 +13,5 @@ export async function checkPermissions(
     username,
   })
 
-  console.log('response: ', JSON.stringify(response))
-
   return response.data.permission as any // @todo replace with explicit validation like with zod
 }
