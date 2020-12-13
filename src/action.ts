@@ -4,8 +4,8 @@ import { addContributions } from './all-contributors/cli/addContributors'
 import { findConfig } from './all-contributors/cli/findConfig'
 import { generateContributorsListIntoMarkdown } from './all-contributors/cli/generate'
 import { parseComment } from './all-contributors/parseComment'
-import { pushAll } from './git/push-all'
-import { addReaction } from './github/addReaction'
+import { pushAllChangesToGit } from './git/pushAllChangesToGit'
+import { addOkayReaction } from './github/addOkayReaction'
 import { checkPermissions } from './github/checkPermissions'
 import { getCommentBody, getCommentId } from './github/getters'
 import { GithubContext, Octokit } from './github/octokit'
@@ -39,12 +39,12 @@ export async function action({ cwd, ctx, octokit, exec }: ActionCtx) {
   await addContributions(configPath, contributions)
   await generateContributorsListIntoMarkdown({ configPath, cwd })
 
-  await pushAll(exec)
+  await pushAllChangesToGit(exec)
 
   const commentId = getCommentId(ctx)
   assert(
     commentId !== undefined,
     "Comment body couldn't be found. Did you setup action to run on `issue_comment` event?",
   )
-  await addReaction(octokit, ctx, commentId)
+  await addOkayReaction(octokit, ctx, commentId)
 }

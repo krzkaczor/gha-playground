@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - master
-
+    paths:
+      - './src/**/*'
+      - 'package.json'
+      - 'action.yml'
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -28,15 +31,19 @@ jobs:
           restore-keys: ${{ runner.OS }}-${{ matrix.node }}-yarn-cache-
 
       - run: yarn --no-progress --non-interactive --frozen-lockfile
+      # note this is exactly the same as on CI workflow
+      - run: yarn lint
+      - run: yarn format
       - run: yarn build
+      - run: yarn test
+      - run: yarn typecheck
 
-      # - name: Setup SSH debug session
-      #   uses: mxschmitt/action-tmate@v2
+      - run: yarn build
 
       - name: Commit files
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
 
           git add --force dist/index.js
           git stash
@@ -44,7 +51,7 @@ jobs:
           git checkout action
           git checkout stash -- .
 
-          git commit -m "Auto-release" -a
+          git commit -m "Automated release" -a
 
       - name: Push changes
         uses: ad-m/github-push-action@master
