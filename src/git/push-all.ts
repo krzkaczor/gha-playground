@@ -10,6 +10,5 @@ export async function pushAll() {
   await git.add(s.modified)
   await git.commit('Auto commit')
   const remote = `https://${process.env.GITHUB_ACTOR}:${process.env.INPUT_GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`
-  console.log('remote', remote)
   await git.push(remote, 'master')
 }
