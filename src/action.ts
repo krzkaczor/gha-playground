@@ -18,7 +18,7 @@ interface ActionCtx {
   exec: Exec
 }
 
-export async function action({ cwd, ctx, octokit }: ActionCtx) {
+export async function action({ cwd, ctx, octokit, exec }: ActionCtx) {
   const comment = getCommentBody(ctx)
   if (!comment) {
     throw new Error("Comment body couldn't be found. Did you setup action to run on `issue_comment` event?")
@@ -35,11 +35,11 @@ export async function action({ cwd, ctx, octokit }: ActionCtx) {
   }
 
   const contributions = parseComment(comment)
-  console.log(JSON.stringify(contributions))
+  console.log(`Adding ${contributions.length} new contributions`)
   await addContributions(configPath, contributions)
   await generateContributorsListIntoMarkdown({ configPath, cwd })
 
-  await pushAll()
+  await pushAll(exec)
 
   const commentId = getCommentId(ctx)
   assert(

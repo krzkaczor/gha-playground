@@ -1,5 +1,5 @@
 import { mockFn } from 'earljs'
-import { assert } from 'ts-essentials'
+
 import { action } from '../src/action'
 import { Exec } from '../src/types'
 
