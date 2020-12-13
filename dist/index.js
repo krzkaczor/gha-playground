@@ -12134,7 +12134,8 @@ function pushAll(exec) {
         yield exec('git checkout master');
         yield exec('git add -A');
         yield exec('git commit -m "Auto commit"');
-        yield exec('git push');
+        yield exec(`git remote add origin-authed https://${process.env.GITHUB_ACTOR}:${process.env.INPUT_GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`);
+        yield exec('git push origin-authed');
     });
 }
 exports.pushAll = pushAll;
