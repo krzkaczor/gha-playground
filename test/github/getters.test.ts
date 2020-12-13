@@ -6,7 +6,7 @@ const event = require('../fixtures/validEvent.json')
 
 describe('getContextBody', () => {
   it('works', () => {
-    expect(getCommentBody(event)).toEqual('@all-contributors please add @user123 for doc')
+    expect(getCommentBody(event)).toEqual('@all-contributors please add @octocat for doc')
   })
 })
 

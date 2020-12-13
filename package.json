@@ -30,6 +30,7 @@
     "ts-essentials": "^7.0.1"
   },
   "devDependencies": {
+    "nock": "^13.0.5",
     "@types/mocha": "^8.0.4",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",

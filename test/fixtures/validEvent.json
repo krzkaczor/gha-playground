@@ -3,7 +3,7 @@
     "action": "created",
     "comment": {
       "author_association": "OWNER",
-      "body": "@all-contributors please add @user123 for doc",
+      "body": "@all-contributors please add @octocat for doc",
       "created_at": "2020-12-07T19:55:33Z",
       "html_url": "krzkaczor/gha-playground/issues/2#issuecomment-740144426",
       "id": 740144426,
