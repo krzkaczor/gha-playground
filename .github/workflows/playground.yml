@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+        with:
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
 
       - name: Hello world action step
         uses: krzkaczor/gha-playground@action
