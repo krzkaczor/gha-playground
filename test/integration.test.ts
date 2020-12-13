@@ -10,8 +10,6 @@ import { Exec } from '../src/types'
 import { Context } from './helpers/GithubCtxFromEvent'
 import { nockTest } from './helpers/nockTest'
 
-const event = require('./fixtures/validEvent.json')
-
 describe('integration', () => {
   it(
     'works',
@@ -22,6 +20,8 @@ describe('integration', () => {
 
       const octokit = getOctokit('NOT_EXISTING_TOKEN')
       const execMock = mockFn<Exec>().resolvesTo(0)
+      // event from a admin to add @octocat user as a contributor
+      const event = require('./fixtures/validEvent.json')
       const ctx = new Context(event)
 
       await action({ cwd: workdirPath, exec: execMock, octokit, ctx })
