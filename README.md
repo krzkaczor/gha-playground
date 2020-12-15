@@ -17,7 +17,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/krzkaczor"><img src="https://avatars2.githubusercontent.com/u/1814312?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kris Kaczor</b></sub></a><br /><a href="https://github.com/krzkaczor/gha-playground/commits?author=krzkaczor" title="Code">💻</a> <a href="https://github.com/krzkaczor/gha-playground/commits?author=krzkaczor" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/krzkaczor"><img src="https://avatars2.githubusercontent.com/u/1814312?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kris Kaczor</b></sub></a><br /><a href="#audio-krzkaczor" title="Audio">🔊</a> <a href="https://github.com/krzkaczor/gha-playground/commits?author=krzkaczor" title="Documentation">📖</a></td>
   </tr>
 </table>
 
