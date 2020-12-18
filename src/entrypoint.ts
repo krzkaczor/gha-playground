@@ -1,16 +1,13 @@
 import * as core from '@actions/core'
 import { exec } from '@actions/exec'
-import * as github from '@actions/github'
 
 import { action } from './action'
-import { getOctokit } from './github/octokit'
 
 export async function entrypoint() {
-  const ctx = github.context
-  const octokit = getOctokit()
   const cwd = process.cwd()
+  const env = process.env
 
-  await action({ cwd, ctx, octokit, exec })
+  await action({ cwd, exec, env })
 }
 
 entrypoint().catch((e) => {
