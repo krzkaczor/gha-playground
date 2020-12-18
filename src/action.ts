@@ -1,9 +1,9 @@
-import { fstat } from 'fs-extra'
-import { dirSync as tmp } from 'tmp'
-import { newPristineBranch, setup } from './git/utils'
-import { Exec } from './types'
 import { copySync } from 'fs-extra'
 import { join } from 'path'
+import { dirSync as tmp } from 'tmp'
+
+import { Exec } from './exec'
+import { newPristineBranch, setup } from './git/utils'
 
 interface ActionCtx {
   exec: Exec
@@ -22,27 +22,20 @@ export async function action(ctx: ActionCtx, options: Options) {
 
   // copy deploy files away
   for (const file of options.files) {
-    copySync(join(ctx.cwd, file), join(tmpDir, file))
+    const fullOutputPath = join(tmpDir, file)
+
+    // ensureDirSync(dirname(fullOutputPath))
+    copySync(join(ctx.cwd, file), fullOutputPath)
   }
 
-  setup(ctx.exec, ctx.env)
-  newPristineBranch(ctx.exec, options.branchName)
+  await setup(ctx.exec, ctx.env)
+  await newPristineBranch(ctx.exec, options.branchName)
 
   // copy files back
+  for (const file of options.files) {
+    await ctx.exec(`git add --force ${file}`)
+  }
 
-  ctx.exec(`git add -A`)
-  ctx.exec(`git commit -m "Automated release" -a`)
-  ctx.exec(`git push origin-authorized`)
-
-  // 1. copy files away
-  // 2. newPristingeBranch or switch
-  // 3. remove all files
-  // 4. add & commit & push
-  // git add --force dist/index.js
-  //         git add action.yml README.md
-  //         git stash
-  //         git fetch --all
-  //         git checkout action
-  //         git checkout stash -- .
-  //         git commit -m "Automated release" -a
+  await ctx.exec(`git commit -m "Automated release" -a`)
+  await ctx.exec(`git push origin-authorized`)
 }

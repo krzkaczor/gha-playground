@@ -1,4 +1,4 @@
-import { Exec } from '../types'
+import { Exec } from '../exec'
 
 export async function setup(exec: Exec, env: NodeJS.ProcessEnv) {
   await exec('git config --global user.email github-actions[bot]@users.noreply.github.com')

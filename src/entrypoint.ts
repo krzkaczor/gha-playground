@@ -1,13 +1,13 @@
 import * as core from '@actions/core'
-import { exec } from '@actions/exec'
 
 import { action } from './action'
+import { getExec } from './exec'
 
 export async function entrypoint() {
   const cwd = process.cwd()
   const env = process.env
 
-  await action({ cwd, exec, env })
+  await action({ cwd, exec: getExec(process.cwd()), env }, { branchName: 'action', files: [] })
 }
 
 entrypoint().catch((e) => {
