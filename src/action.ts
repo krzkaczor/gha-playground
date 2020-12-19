@@ -3,7 +3,7 @@ import { join } from 'path'
 import { dirSync as tmp } from 'tmp'
 
 import { Exec } from './exec'
-import { newPristineBranch, setup } from './git/utils'
+import { checkIfRemoteBranchExists, newPristineBranch, setupGit,switchBranch } from './git/utils'
 
 interface ActionCtx {
   exec: Exec
@@ -28,8 +28,12 @@ export async function action(ctx: ActionCtx, options: Options) {
     copySync(join(ctx.cwd, file), fullOutputPath)
   }
 
-  await setup(ctx.exec, ctx.env)
-  await newPristineBranch(ctx.exec, options.branchName)
+  await setupGit(ctx.exec, ctx.env)
+  if (await checkIfRemoteBranchExists(ctx.exec, options.branchName)) {
+    await switchBranch(ctx.exec, options.branchName)
+  } else {
+    await newPristineBranch(ctx.exec, options.branchName)
+  }
 
   // copy files back
   for (const file of options.files) {

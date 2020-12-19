@@ -1,42 +1,29 @@
 import { expect } from 'earljs'
-import { ensureDirSync, readFileSync, writeFileSync } from 'fs-extra'
-import { dirname, join } from 'path'
-import simpleGit from 'simple-git/promise'
-import { dirSync as tmp } from 'tmp'
+import { readFileSync } from 'fs-extra'
+import { join } from 'path'
 
 import { action } from '../src/action'
-import { Exec, getExec } from '../src/exec'
+import { getFilteringExec, makeWorkspace } from './helpers'
 
 describe('integration', () => {
-  it('works', async () => {
-    const workspace = tmp().name
-    console.log('Workspace: ', workspace)
-    const git = simpleGit(workspace)
+  it('creates new deploy branch', async () => {
     const workspaceFiles = {
       'action.yml': `name: 'action for tests'`,
       'dist/index.js': `console.log('test!')`,
       '.gitignore': 'dist/index.js',
     }
-    writeFiles(workspaceFiles, workspace)
-    await git.init()
-    const realExec = getExec(workspace)
-    await realExec('git add .gitignore action.yml')
-    await realExec('git commit -m init')
+    const { exec, git, workspacePath } = await makeWorkspace(workspaceFiles)
+    const filteringExec = getFilteringExec(exec)
 
-    const filteringExec: Exec = (...args: any[]) => {
-      // ignore git pushes
-      if (args[0].startsWith('git push')) {
-        return // do nothing because push will fail anyway
-      }
-      return (realExec as any)(...args)
-    }
+    await exec('git add .gitignore action.yml')
+    await exec('git commit -m init')
 
     await action(
-      { cwd: workspace, env: {}, exec: filteringExec },
+      { cwd: workspacePath, env: {}, exec: filteringExec },
       { branchName: 'action', files: ['action.yml', 'dist/index.js'] },
     )
 
-    const distIndexContents = readFileSync(join(workspace, 'dist/index.js'), 'utf-8')
+    const distIndexContents = readFileSync(join(workspacePath, 'dist/index.js'), 'utf-8')
     expect(distIndexContents).toEqual(workspaceFiles['dist/index.js'])
 
     const status = await git.status()
@@ -48,15 +35,43 @@ describe('integration', () => {
     // @todo due to earl back this requires ...
     expect({ ...branchesInfo }).toBeAnObjectWith({ all: ['action', 'master'], current: 'action' })
 
-    const exactOutput = await realExec('git diff-tree --no-commit-id --name-status -r HEAD')
+    const exactOutput = await exec('git diff-tree --no-commit-id --name-status -r HEAD')
+    expect(exactOutput).toMatchSnapshot()
+  })
+
+  it.only('pushes to already existing branch', async () => {
+    const workspaceFiles = {
+      'action.yml': `name: 'action for tests'`,
+      'dist/index.js': `console.log('test!')`,
+      '.gitignore': 'dist/index.js',
+    }
+    const { exec, git, workspacePath } = await makeWorkspace(workspaceFiles)
+    const filteringExec = getFilteringExec(exec)
+
+    await exec('git add .gitignore action.yml')
+    await exec('git commit -m init')
+    // create action branch and switch back to master
+    await exec('git checkout -b action')
+    await exec('git checkout master')
+
+    await action(
+      { cwd: workspacePath, env: {}, exec: filteringExec },
+      { branchName: 'action', files: ['action.yml', 'dist/index.js'] },
+    )
+
+    const distIndexContents = readFileSync(join(workspacePath, 'dist/index.js'), 'utf-8')
+    expect(distIndexContents).toEqual(workspaceFiles['dist/index.js'])
+
+    const status = await git.status()
+    // .gitignore should be not tracked on this branch
+    // @todo due to earl back this requires ...
+    expect({ ...status }).toBeAnObjectWith({ created: [], deleted: [], modified: [], not_added: [] })
+
+    const branchesInfo = await git.branch()
+    // @todo due to earl back this requires ...
+    expect({ ...branchesInfo }).toBeAnObjectWith({ all: ['action', 'master'], current: 'action' })
+
+    const exactOutput = await exec('git diff-tree --no-commit-id --name-status -r HEAD')
     expect(exactOutput).toMatchSnapshot()
   })
 })
-
-function writeFiles(workspaceFiles: Record<string, string>, path: string) {
-  for (const [filePath, contents] of Object.entries(workspaceFiles)) {
-    const fullPath = join(path, filePath)
-    ensureDirSync(dirname(fullPath))
-    writeFileSync(fullPath, contents)
-  }
-}
