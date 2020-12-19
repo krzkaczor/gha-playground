@@ -19,16 +19,18 @@ export async function makeWorkspace(
 }
 
 /**
- * Skips side effects that would require real git remote
+ * Skips side effects that would require real git remote or change global git settings as tests do not run usually in a sandboxed environment
  */
 export function getFilteringExec(realExec: Exec): Exec {
   return (...args: any[]) => {
-    // ignore git pushes
     if (args[0].startsWith('git push')) {
-      return // do nothing because push will fail anyway
+      return
     }
     if (args[0].startsWith('git remote')) {
-      return // do nothing because push will fail anyway
+      return
+    }
+    if (args[0].startsWith('git config')) {
+      return
     }
     if (args[0].startsWith('git ls-remote --heads origin')) {
       return 'git branch --list' + args[0].slice('git ls-remote --heads origin'.length)
