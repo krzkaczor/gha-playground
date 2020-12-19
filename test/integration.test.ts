@@ -1,8 +1,8 @@
-import { ensureDirSync, writeFileSync } from 'fs-extra'
+import { expect } from 'earljs'
+import { ensureDirSync, readFileSync, writeFileSync } from 'fs-extra'
 import { dirname, join } from 'path'
 import simpleGit from 'simple-git/promise'
 import { dirSync as tmp } from 'tmp'
-import { expect } from 'earljs'
 
 import { action } from '../src/action'
 import { Exec, getExec } from '../src/exec'
@@ -35,6 +35,18 @@ describe('integration', () => {
       { cwd: workspace, env: {}, exec: filteringExec },
       { branchName: 'action', files: ['action.yml', 'dist/index.js'] },
     )
+
+    const distIndexContents = readFileSync(join(workspace, 'dist/index.js'), 'utf-8')
+    expect(distIndexContents).toEqual(workspaceFiles['dist/index.js'])
+
+    const status = await git.status()
+    // .gitignore should be not tracked on this branch
+    // @todo due to earl back this requires ...
+    expect({ ...status }).toBeAnObjectWith({ created: [], deleted: [], modified: [], not_added: ['.gitignore'] })
+
+    const branchesInfo = await git.branch()
+    // @todo due to earl back this requires ...
+    expect({ ...branchesInfo }).toBeAnObjectWith({ all: ['action', 'master'], current: 'action' })
 
     const exactOutput = await realExec('git diff-tree --no-commit-id --name-status -r HEAD')
     expect(exactOutput).toMatchSnapshot()
