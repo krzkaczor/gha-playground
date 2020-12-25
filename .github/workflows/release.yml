@@ -40,21 +40,11 @@ jobs:
 
       - run: yarn build
 
-      - name: Commit files
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-
-          git add --force dist/index.js
-          git stash
-          git fetch --all
-          git checkout action
-          git checkout stash -- .
-
-          git commit -m "Automated release" -a
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - uses: ActionwareIO/branch-push-action@action
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: action
+          branch: action-new
+          files: |
+            README.md
+            action.yml
+            ./dist/index.js
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
