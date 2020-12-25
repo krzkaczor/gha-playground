@@ -78,5 +78,42 @@ describe('integration', () => {
     expect(exactOutput).toMatchSnapshot()
   })
 
-  it('works when nothing to commit')
+  it('works when nothing to commit', async () => {
+    const workspaceFiles = {
+      'action.yml': `name: 'action for tests'`,
+      '.gitignore': 'dist/index.js',
+    }
+    const { exec, git, workspacePath } = await makeWorkspace(workspaceFiles)
+    const filteringExec = getFilteringExec(exec)
+
+    await exec('git add .gitignore action.yml')
+    await exec('git commit -m init')
+    // create action branch, commit old code and switch back to master
+    await exec('git checkout -b action')
+    writeFiles({ 'dist/index.js': `console.log('new!')` }, workspacePath)
+    await exec('git add -f dist/index.js')
+    await exec('git commit -m "some old build"')
+    await exec('git checkout master')
+    writeFiles({ 'dist/index.js': `console.log('new!')` }, workspacePath)
+
+    await action(
+      { cwd: workspacePath, env: {}, exec: filteringExec },
+      { branchName: 'action', files: ['action.yml', 'dist/index.js'] },
+    )
+
+    const distIndexContents = readFileSync(join(workspacePath, 'dist/index.js'), 'utf-8')
+    expect(distIndexContents).toEqual(`console.log('new!')`)
+
+    const status = await git.status()
+    // .gitignore should be not tracked on this branch
+    // @todo due to earl back this requires ...
+    expect({ ...status }).toBeAnObjectWith({ created: [], deleted: [], modified: [], not_added: [] })
+
+    const branchesInfo = await git.branch()
+    // @todo due to earl back this requires ...
+    expect({ ...branchesInfo }).toBeAnObjectWith({ all: ['action', 'master'], current: 'action' })
+
+    const exactOutput = await exec('git diff-tree --no-commit-id --name-status -r HEAD')
+    expect(exactOutput).toMatchSnapshot()
+  })
 })

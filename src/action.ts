@@ -3,7 +3,7 @@ import { join } from 'path'
 import { dirSync as tmp } from 'tmp'
 
 import { Exec } from './exec'
-import { checkIfRemoteBranchExists, newPristineBranch, setupGit, switchBranch } from './git/utils'
+import { checkIfRemoteBranchExists, isStageAreEmpty, newPristineBranch, setupGit, switchBranch } from './git/utils'
 
 interface ActionCtx {
   exec: Exec
@@ -45,6 +45,8 @@ export async function action(ctx: ActionCtx, options: Options) {
     await ctx.exec(`git add --force ${file}`)
   }
 
-  await ctx.exec(`git commit -m "Automated release" -a`)
-  await ctx.exec(`git push origin-authorized`)
+  if (!(await isStageAreEmpty(ctx.exec))) {
+    await ctx.exec(`git commit -m "Automated release" -a`)
+    await ctx.exec(`git push origin-authorized`)
+  }
 }

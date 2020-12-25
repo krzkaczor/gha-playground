@@ -27,3 +27,8 @@ export async function checkIfRemoteBranchExists(exec: Exec, branchName: string):
 
   return branchInfo.indexOf(branchName) !== -1
 }
+
+export async function isStageAreEmpty(exec: Exec): Promise<boolean> {
+  const output = await exec('git diff --cached')
+  return output === ''
+}
