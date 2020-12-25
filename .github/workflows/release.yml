@@ -39,7 +39,7 @@ jobs:
 
       - uses: ActionwareIO/branch-push-action@action
         with:
-          branch: action-new
+          branch: action-new2
           files: |
             README.md
             action.yml
