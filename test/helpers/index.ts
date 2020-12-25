@@ -40,7 +40,7 @@ export function getFilteringExec(realExec: Exec): Exec {
   }
 }
 
-function writeFiles(workspaceFiles: Record<string, string>, path: string) {
+export function writeFiles(workspaceFiles: Record<string, string>, path: string) {
   for (const [filePath, contents] of Object.entries(workspaceFiles)) {
     const fullPath = join(path, filePath)
     ensureDirSync(dirname(fullPath))

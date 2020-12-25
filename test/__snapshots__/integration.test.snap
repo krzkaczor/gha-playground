@@ -7,6 +7,6 @@ A	dist/index.js
 `;
 
 exports[`integration pushes to already existing branch 1`] = `
-"A	dist/index.js
+"M	dist/index.js
 "
 `;

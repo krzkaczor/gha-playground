@@ -3,10 +3,10 @@ import { readFileSync } from 'fs-extra'
 import { join } from 'path'
 
 import { action } from '../src/action'
-import { getFilteringExec, makeWorkspace } from './helpers'
+import { getFilteringExec, makeWorkspace, writeFiles } from './helpers'
 
 describe('integration', () => {
-  it.only('creates new deploy branch', async () => {
+  it('creates new deploy branch', async () => {
     const workspaceFiles = {
       'action.yml': `name: 'action for tests'`,
       'dist/index.js': `console.log('test!')`,
@@ -42,7 +42,6 @@ describe('integration', () => {
   it('pushes to already existing branch', async () => {
     const workspaceFiles = {
       'action.yml': `name: 'action for tests'`,
-      'dist/index.js': `console.log('test!')`,
       '.gitignore': 'dist/index.js',
     }
     const { exec, git, workspacePath } = await makeWorkspace(workspaceFiles)
@@ -50,9 +49,13 @@ describe('integration', () => {
 
     await exec('git add .gitignore action.yml')
     await exec('git commit -m init')
-    // create action branch and switch back to master
+    // create action branch, commit old code and switch back to master
     await exec('git checkout -b action')
+    writeFiles({ 'dist/index.js': `console.log('old!')` }, workspacePath)
+    await exec('git add -f dist/index.js')
+    await exec('git commit -m "some old build"')
     await exec('git checkout master')
+    writeFiles({ 'dist/index.js': `console.log('new!')` }, workspacePath)
 
     await action(
       { cwd: workspacePath, env: {}, exec: filteringExec },
@@ -60,7 +63,7 @@ describe('integration', () => {
     )
 
     const distIndexContents = readFileSync(join(workspacePath, 'dist/index.js'), 'utf-8')
-    expect(distIndexContents).toEqual(workspaceFiles['dist/index.js'])
+    expect(distIndexContents).toEqual(`console.log('new!')`)
 
     const status = await git.status()
     // .gitignore should be not tracked on this branch
@@ -74,4 +77,6 @@ describe('integration', () => {
     const exactOutput = await exec('git diff-tree --no-commit-id --name-status -r HEAD')
     expect(exactOutput).toMatchSnapshot()
   })
+
+  it('works when nothing to commit')
 })

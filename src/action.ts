@@ -36,8 +36,12 @@ export async function action(ctx: ActionCtx, options: Options) {
     await newPristineBranch(ctx.exec, options.branchName)
   }
 
-  console.info(`Coping ${options.files.length} files back to the workspace`)
+  console.info(`Coping ${options.files.length} files back to the workspace and git adding them`)
   for (const file of options.files) {
+    const fullOutputPath = join(tmpDir, file)
+
+    copySync(fullOutputPath, join(ctx.cwd, file), { overwrite: true })
+
     await ctx.exec(`git add --force ${file}`)
   }
 
