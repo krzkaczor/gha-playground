@@ -6,7 +6,7 @@ import { action } from '../src/action'
 import { getFilteringExec, makeWorkspace } from './helpers'
 
 describe('integration', () => {
-  it('creates new deploy branch', async () => {
+  it.only('creates new deploy branch', async () => {
     const workspaceFiles = {
       'action.yml': `name: 'action for tests'`,
       'dist/index.js': `console.log('test!')`,
@@ -39,7 +39,7 @@ describe('integration', () => {
     expect(exactOutput).toMatchSnapshot()
   })
 
-  it.only('pushes to already existing branch', async () => {
+  it('pushes to already existing branch', async () => {
     const workspaceFiles = {
       'action.yml': `name: 'action for tests'`,
       'dist/index.js': `console.log('test!')`,

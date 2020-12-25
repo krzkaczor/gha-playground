@@ -33,7 +33,8 @@ export function getFilteringExec(realExec: Exec): Exec {
       return
     }
     if (args[0].startsWith('git ls-remote --heads origin')) {
-      return 'git branch --list' + args[0].slice('git ls-remote --heads origin'.length)
+      // eslint-disable-next-line
+      return realExec('git branch --list' + args[0].slice('git ls-remote --heads origin'.length))
     }
     return (realExec as any)(...args)
   }

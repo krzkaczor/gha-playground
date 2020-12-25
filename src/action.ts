@@ -3,7 +3,7 @@ import { join } from 'path'
 import { dirSync as tmp } from 'tmp'
 
 import { Exec } from './exec'
-import { checkIfRemoteBranchExists, newPristineBranch, setupGit,switchBranch } from './git/utils'
+import { checkIfRemoteBranchExists, newPristineBranch, setupGit, switchBranch } from './git/utils'
 
 interface ActionCtx {
   exec: Exec
@@ -18,24 +18,25 @@ interface Options {
 
 export async function action(ctx: ActionCtx, options: Options) {
   const tmpDir = tmp().name
-  console.log('Tmp dir: ', tmpDir)
+  console.log('Tmp dir created: ', tmpDir)
 
-  // copy deploy files away
+  console.info(`Coping ${options.files.length} files away to tmp dir`)
   for (const file of options.files) {
     const fullOutputPath = join(tmpDir, file)
 
-    // ensureDirSync(dirname(fullOutputPath))
     copySync(join(ctx.cwd, file), fullOutputPath)
   }
 
   await setupGit(ctx.exec, ctx.env)
   if (await checkIfRemoteBranchExists(ctx.exec, options.branchName)) {
+    console.log(`Remote branch ${options.branchName} exists. Switching...`)
     await switchBranch(ctx.exec, options.branchName)
   } else {
+    console.log(`Remote branch ${options.branchName} does not exist. Creating pristine branch ${options.branchName}.`)
     await newPristineBranch(ctx.exec, options.branchName)
   }
 
-  // copy files back
+  console.info(`Coping ${options.files.length} files back to the workspace`)
   for (const file of options.files) {
     await ctx.exec(`git add --force ${file}`)
   }
